@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - My Orders</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f6f8; color: #222; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+        header { background: #1e293b; position: sticky; top: 0; z-index: 10; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; }
+        .logo { color: #fff; font-size: 24px; font-weight: bold; text-decoration: none; }
+        .nav-links { list-style: none; display: flex; gap: 20px; }
+        .nav-links a { color: #e2e8f0; text-decoration: none; }
+        .nav-links a:hover { color: #38bdf8; }
+        .hero { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; text-align: center; padding: 70px 16px; }
+        .hero h1 { font-size: 38px; margin-bottom: 10px; }
+        .hero p { margin-bottom: 20px; }
+        .btn { background: #2563eb; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 15px; }
+        .btn:hover { background: #1d4ed8; }
+        .btn-light { background: #e2e8f0; color: #1e293b; }
+        .btn-light:hover { background: #cbd5e1; }
+        .hero .btn { background: #fff; color: #2563eb; }
+        .section { padding: 50px 0; }
+        .section-title { text-align: center; margin-bottom: 25px; font-size: 28px; }
+        .filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filters input, .filters select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; }
+        .filters input { flex: 1; min-width: 180px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; }
+        .product-info { padding: 14px; }
+        .product-info h3 { margin-bottom: 6px; font-size: 17px; }
+        .price { color: #059669; font-weight: bold; margin-bottom: 10px; }
+        .cart-list { background: #fff; border-radius: 10px; padding: 10px 16px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+        .cart-controls { display: flex; align-items: center; gap: 10px; }
+        .quantity-btn { width: 30px; height: 30px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; cursor: pointer; font-size: 18px; }
+        .remove-btn { background: #dc2626; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        .cart-summary { background: #fff; border-radius: 10px; padding: 16px; margin-top: 16px; }
+        .cart-summary h3 { margin-bottom: 14px; }
+        .cart-summary .btn { margin-top: 6px; }
+        .empty-message { text-align: center; padding: 20px; color: #64748b; }
+        .checkout-box { border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 10px; }
+        .checkout-box h4 { margin-bottom: 10px; }
+        .contact-box { background: #fff; max-width: 520px; margin: 0 auto; padding: 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .auth-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; font-family: inherit; }
+        .form-group textarea { min-height: 100px; }
+        .form-message { margin-top: 12px; font-weight: bold; }
+        .orders-wrap { max-width: 700px; margin: 0 auto; }
+        .order-card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .order-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .order-head span { color: #64748b; font-size: 14px; }
+        .order-items { list-style: none; margin-bottom: 10px; }
+        .order-items li { padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+        .order-total { text-align: right; font-weight: bold; color: #059669; }
+        footer { background: #1e293b; color: #e2e8f0; text-align: center; padding: 24px 16px; }
+        .social-links { margin-top: 10px; display: flex; justify-content: center; gap: 16px; }
+        .social-links a { color: #38bdf8; text-decoration: none; }
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; gap: 10px; }
+            .nav-links { gap: 12px; flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <a href="#home" class="logo">ShopEase.</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="#cart">Cart (<span id="nav-cart-count">0</span>)</a></li>
+                    <li id="nav-orders-item" hidden><a href="#my-orders">My Orders</a></li>
+                    <li><a href="#account" id="nav-account">Login</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Welcome to ShopEase</h1>
+            <p>Discover amazing products at great prices.</p>
+            <a href="#products" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="section" id="products">
+        <div class="container">
+            <h2 class="section-title">Our Products</h2>
+            <div class="filters">
+                <input type="search" id="search-input" placeholder="Search products...">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Home">Home</option>
+                    <option value="ANIMAL">ANIMAL</option>
+                </select>
+            </div>
+            <div class="product-grid" id="product-list"></div>
+            <p class="empty-message" id="no-products" hidden>No products found.</p>
+        </div>
+    </section>
+
+    <section class="section" id="cart">
+        <div class="container">
+            <h2 class="section-title">Your Shopping Cart</h2>
+            <div class="cart-list" id="cart-list"></div>
+            <div class="cart-summary">
+                <p>Total items: <strong id="cart-count">0</strong></p>
+                <h3>Total price: <span id="cart-total">Rs. 0.00</span></h3>
+
+                <div class="checkout-box">
+                    <h4>Delivery Details</h4>
+                    <div class="form-group">
+                        <label for="checkout-name">Your Name</label>
+                        <input type="text" id="checkout-name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-phone">Phone Number</label>
+                        <input type="tel" id="checkout-phone" placeholder="03XX XXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-address">Address</label>
+                        <textarea id="checkout-address" placeholder="House no, street, city"></textarea>
+                    </div>
+                    <button type="button" class="btn" id="checkout-btn">Place Order</button>
+                    <p class="form-message" id="checkout-message"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Orders: sirf login user ko nazar aata hai -->
+    <section class="section" id="my-orders" hidden>
+        <div class="container">
+            <h2 class="section-title">My Orders</h2>
+            <div class="orders-wrap" id="my-orders-list"></div>
+        </div>
+    </section>
+
+    <section class="section" id="account">
+        <div class="container">
+            <h2 class="section-title">My Account</h2>
+
+            <!-- Ye hissa tab dikhta hai jab user login NA ho -->
+            <div id="logged-out">
+                <div class="auth-tabs">
+                    <button type="button" class="btn" id="show-login">Login</button>
+                    <button type="button" class="btn btn-light" id="show-signup">Signup</button>
+                </div>
+
+                <form class="contact-box" id="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <p class="form-message" id="login-message"></p>
+                </form>
+
+                <form class="contact-box" id="signup-form" hidden novalidate>
+                    <div class="form-group">
+                        <label for="signup-name">Your Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password (kam az kam 6 characters)</label>
+                        <input type="password" id="signup-password" placeholder="Choose a password">
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                    <p class="form-message" id="signup-message"></p>
+                </form>
+            </div>
+
+            <!-- Ye hissa tab dikhta hai jab user login ho -->
+            <div class="contact-box" id="logged-in" hidden>
+                <p>Hello, <strong id="user-name"></strong>! Aap login hain.</p>
+                <br>
+                <button type="button" class="btn" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <form class="contact-box" id="contact-form" novalidate>
+                <div class="form-group">
+                    <label for="contact-name">Your Name</label>
+                    <input type="text" id="contact-name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Your Email</label>
+                    <input type="email" id="contact-email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="contact-message">Message</label>
+                    <textarea id="contact-message" placeholder="Write your message"></textarea>
+                </div>
+                <button type="submit" class="btn">Send Message</button>
+                <p class="form-message" id="form-message"></p>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; <span id="year"></span> ShopEase. All rights reserved.</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener">YouTube</a>
+        </div>
+    </footer>
+
+    <script>
+        let products = [];
+        let cart = [];
+
+        // Login ki maloomat browser mein save hoti hai
+        let token = localStorage.getItem("shopEaseToken") || "";
+        let userName = localStorage.getItem("shopEaseName") || "";
+
+        function getElement(id) {
+            return document.getElementById(id);
+        }
+
+        function formatPrice(price) {
+            return "Rs. " + price.toLocaleString("en-PK", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // ---------- Login / Signup ----------
+
+        function updateAccountUI() {
+            const loggedIn = token !== "";
+            getElement("logged-out").hidden = loggedIn;
+            getElement("logged-in").hidden = !loggedIn;
+            getElement("nav-account").textContent = loggedIn ? "Hi, " + userName : "Login";
+            getElement("user-name").textContent = userName;
+
+            if (loggedIn && getElement("checkout-name").value === "") {
+                getElement("checkout-name").value = userName;
+            }
+
+            loadMyOrders();
+        }
+
+        function saveSession(newToken, newName) {
+            token = newToken;
+            userName = newName;
+            localStorage.setItem("shopEaseToken", token);
+            localStorage.setItem("shopEaseName", userName);
+            updateAccountUI();
+        }
+
+        function clearSession() {
+            token = "";
+            userName = "";
+            localStorage.removeItem("shopEaseToken");
+            localStorage.removeItem("shopEaseName");
+            updateAccountUI();
+        }
+
+        function showAuth(which) {
+            getElement("login-form").hidden = which !== "login";
+            getElement("signup-form").hidden = which !== "signup";
+            getElement("show-login").className = which === "login" ? "btn" : "btn btn-light";
+            getElement("show-signup").className = which === "signup" ? "btn" : "btn btn-light";
+        }
+
+        getElement("show-login").addEventListener("click", () => showAuth("login"));
+        getElement("show-signup").addEventListener("click", () => showAuth("signup"));
+
+        getElement("signup-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const form = this;
+            const name = getElement("signup-name").value.trim();
+            const email = getElement("signup-email").value.trim();
+            const password = getElement("signup-password").value;
+            const result = getElement("signup-message");
+
+            if (!name || !email || !password) {
+                result.style.color = "#dc2626";
+                result.textContent = "Sab fields bharo.";
+                return;
+            }
+
+            if (password.length < 6) {
+                result.style.color = "#dc2626";
+                result.textContent = "Password kam az kam 6 characters ka rakho.";
+                return;
+            }
+
+            fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name, email: email, password: password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.token) {
+                        result.style.color = "#dc2626";
+                        result.textContent = data.message;
+                        return;
+                    }
+                    result.textContent = "";
+                    form.reset();
+                    saveSession(data.token, data.name);
+                })
+                .catch(() => {
+                    result.style.color = "#dc2626";
+                    result.textContent = "Server se connection nahi hua. Server chalu karo.";
+                });
+        });
+
+        getElement("login-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const form = this;
+            const email = getElement("login-email").value.trim();
+            const password = getElement("login-password").value;
+            const result = getElement("login-message");
+
+            if (!email || !password) {
+                result.style.color = "#dc2626";
+                result.textContent = "Email aur password bharo.";
+                return;
+            }
+
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email, password: password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.token) {
+                        result.style.color = "#dc2626";
+                        result.textContent = data.message;
+                        return;
+                    }
+                    result.textContent = "";
+                    form.reset();
+                    saveSession(data.token, data.name);
+                })
+                .catch(() => {
+                    result.style.color = "#dc2626";
+                    result.textContent = "Server se connection nahi hua. Server chalu karo.";
+                });
+        });
+
+        getElement("logout-btn").addEventListener("click", function () {
+            clearSession();
+            getElement("checkout-name").value = "";
+        });
+
+        // ---------- My Orders ----------
+
+        function renderMyOrders(orders) {
+            const list = getElement("my-orders-list");
+            list.replaceChildren();
+
+            if (orders.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "empty-message";
+                empty.textContent = "Abhi tak aap ne koi order nahi kiya.";
+                list.append(empty);
+                return;
+            }
+
+            orders.forEach(order => {
+                const card = document.createElement("div");
+                card.className = "order-card";
+
+                const head = document.createElement("div");
+                head.className = "order-head";
+
+                const title = document.createElement("strong");
+                title.textContent = "Order #" + order.orderNumber;
+
+                const date = document.createElement("span");
+                date.textContent = new Date(order.date).toLocaleString("en-PK");
+
+                head.append(title, date);
+
+                const itemList = document.createElement("ul");
+                itemList.className = "order-items";
+
+                order.items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = item.name + " x " + item.quantity;
+                    itemList.append(li);
+                });
+
+                const total = document.createElement("p");
+                total.className = "order-total";
+                total.textContent = "Total: " + formatPrice(order.total);
+
+                card.append(head, itemList, total);
+                list.append(card);
+            });
+        }
+
+        function loadMyOrders() {
+            const section = getElement("my-orders");
+            const navItem = getElement("nav-orders-item");
+
+            if (!token) {
+                section.hidden = true;
+                navItem.hidden = true;
+                getElement("my-orders-list").replaceChildren();
+                return;
+            }
+
+            section.hidden = false;
+            navItem.hidden = false;
+
+            fetch("/my-orders", {
+                headers: { "Authorization": "Bearer " + token }
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        clearSession();
+                        throw new Error("login");
+                    }
+                    return response.json();
+                })
+                .then(orders => {
+                    if (Array.isArray(orders)) {
+                        renderMyOrders(orders);
+                    }
+                })
+                .catch(() => {
+                    // Server band ho ya login khatam ho, to yahan kuch nahi dikhana
+                });
+        }
+
+        // ---------- Products aur Cart ----------
+
+        function loadCart() {
+            try {
+                const savedCart = JSON.parse(localStorage.getItem("shopEaseCart"));
+                if (Array.isArray(savedCart)) {
+                    cart = savedCart.filter(item =>
+                        products.some(product => product.id === item.id) &&
+                        Number.isInteger(item.quantity) &&
+                        item.quantity > 0
+                    );
+                }
+            } catch (error) {
+                cart = [];
+            }
+        }
+
+        function displayProducts(productArray = products) {
+            const productList = getElement("product-list");
+            productList.replaceChildren();
+            getElement("no-products").hidden = productArray.length !== 0;
+
+            productArray.forEach(product => {
+                const card = document.createElement("article");
+                card.className = "product-card";
+
+                const image = document.createElement("img");
+                image.src = product.image;
+                image.alt = product.name;
+                image.loading = "lazy";
+
+                const info = document.createElement("div");
+                info.className = "product-info";
+
+                const name = document.createElement("h3");
+                name.textContent = product.name;
+
+                const price = document.createElement("p");
+                price.className = "price";
+                price.textContent = formatPrice(product.price);
+
+                const button = document.createElement("button");
+                button.className = "btn";
+                button.textContent = "Add to Cart";
+                button.type = "button";
+                button.addEventListener("click", () => addToCart(product.id));
+
+                info.append(name, price, button);
+                card.append(image, info);
+                productList.append(card);
+            });
+        }
+
+        function saveCart() {
+            localStorage.setItem("shopEaseCart", JSON.stringify(cart));
+        }
+
+        function addToCart(productId) {
+            const product = products.find(item => item.id === productId);
+            if (!product) return;
+
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity += 1;
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+            saveCart();
+            displayCart();
+        }
+
+        function changeQuantity(productId, amount) {
+            const item = cart.find(product => product.id === productId);
+            if (!item) return;
+
+            item.quantity += amount;
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            saveCart();
+            displayCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            displayCart();
+        }
+
+        function displayCart() {
+            const cartList = getElement("cart-list");
+            cartList.replaceChildren();
+
+            let totalItems = 0;
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "empty-message";
+                empty.textContent = "Your cart is empty. Add some products!";
+                cartList.append(empty);
+            }
+
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (!product) return;
+
+                totalItems += item.quantity;
+                totalPrice += product.price * item.quantity;
+
+                const row = document.createElement("div");
+                row.className = "cart-item";
+
+                const details = document.createElement("div");
+                const name = document.createElement("h3");
+                name.textContent = product.name;
+                const price = document.createElement("p");
+                price.textContent = formatPrice(product.price) + " each";
+                details.append(name, price);
+
+                const controls = document.createElement("div");
+                controls.className = "cart-controls";
+
+                const decrease = document.createElement("button");
+                decrease.className = "quantity-btn";
+                decrease.textContent = "−";
+                decrease.type = "button";
+                decrease.addEventListener("click", () => changeQuantity(product.id, -1));
+
+                const quantity = document.createElement("span");
+                quantity.textContent = item.quantity;
+
+                const increase = document.createElement("button");
+                increase.className = "quantity-btn";
+                increase.textContent = "+";
+                increase.type = "button";
+                increase.addEventListener("click", () => changeQuantity(product.id, 1));
+
+                const subtotal = document.createElement("strong");
+                subtotal.textContent = formatPrice(product.price * item.quantity);
+
+                const remove = document.createElement("button");
+                remove.className = "remove-btn";
+                remove.textContent = "Remove";
+                remove.type = "button";
+                remove.addEventListener("click", () => removeFromCart(product.id));
+
+                controls.append(decrease, quantity, increase, subtotal, remove);
+                row.append(details, controls);
+                cartList.append(row);
+            });
+
+            getElement("cart-count").textContent = totalItems;
+            getElement("nav-cart-count").textContent = totalItems;
+            getElement("cart-total").textContent = formatPrice(totalPrice);
+        }
+
+        function filterProducts() {
+            const searchText = getElement("search-input").value.toLowerCase().trim();
+            const category = getElement("category-filter").value;
+
+            const filtered = products.filter(product => {
+                const matchesName = product.name.toLowerCase().includes(searchText);
+                const matchesCategory = category === "all" || product.category === category;
+                return matchesName && matchesCategory;
+            });
+            displayProducts(filtered);
+        }
+
+        getElement("search-input").addEventListener("input", filterProducts);
+        getElement("category-filter").addEventListener("change", filterProducts);
+
+        // ---------- Contact form ----------
+
+        getElement("contact-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const form = this;
+            const name = getElement("contact-name").value.trim();
+            const email = getElement("contact-email").value.trim();
+            const message = getElement("contact-message").value.trim();
+            const result = getElement("form-message");
+
+            if (!name || !email || !message) {
+                result.style.color = "#dc2626";
+                result.textContent = "Please fill in all fields.";
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                result.style.color = "#dc2626";
+                result.textContent = "Please enter a valid email address.";
+                return;
+            }
+
+            fetch("/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name, email: email, message: message })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    result.style.color = "#047857";
+                    result.textContent = data.message;
+                    form.reset();
+                })
+                .catch(() => {
+                    result.style.color = "#dc2626";
+                    result.textContent = "Server se connection nahi hua. Server chalu karo.";
+                });
+        });
+
+        getElement("year").textContent = new Date().getFullYear();
+
+        // ---------- Place Order (login zaroori hai) ----------
+
+        getElement("checkout-btn").addEventListener("click", function () {
+            const result = getElement("checkout-message");
+            const customerName = getElement("checkout-name").value.trim();
+            const phone = getElement("checkout-phone").value.trim();
+            const address = getElement("checkout-address").value.trim();
+
+            if (!token) {
+                result.style.color = "#dc2626";
+                result.textContent = "Order karne ke liye pehle Login ya Signup karo (Account section mein).";
+                return;
+            }
+
+            if (cart.length === 0) {
+                result.style.color = "#dc2626";
+                result.textContent = "Cart khali hai!";
+                return;
+            }
+
+            if (!customerName || !phone || !address) {
+                result.style.color = "#dc2626";
+                result.textContent = "Naam, phone aur address bharo.";
+                return;
+            }
+
+            if (!/^[0-9+\-\s]{7,15}$/.test(phone)) {
+                result.style.color = "#dc2626";
+                result.textContent = "Sahi phone number likho.";
+                return;
+            }
+
+            fetch("/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    items: cart,
+                    customerName: customerName,
+                    phone: phone,
+                    address: address
+                })
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        clearSession();
+                        throw new Error("login");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.orderId) {
+                        result.style.color = "#dc2626";
+                        result.textContent = data.message;
+                        return;
+                    }
+                    result.style.color = "#047857";
+                    result.textContent = data.message + " Order number: " + data.orderId;
+                    cart = [];
+                    saveCart();
+                    displayCart();
+                    getElement("checkout-phone").value = "";
+                    getElement("checkout-address").value = "";
+                    loadMyOrders();
+                })
+                .catch(error => {
+                    result.style.color = "#dc2626";
+                    if (error.message === "login") {
+                        result.textContent = "Login ka waqt khatam ho gaya. Dobara login karo.";
+                    } else {
+                        result.textContent = "Server se connection nahi hua. Server chalu karo.";
+                    }
+                });
+        });
+
+        // ---------- Page khulne par ----------
+
+        updateAccountUI();
+
+        fetch("/products")
+            .then(response => response.json())
+            .then(data => {
+                products = data;
+                loadCart();
+                displayProducts();
+                displayCart();
+            })
+            .catch(() => {
+                getElement("no-products").hidden = false;
+                getElement("no-products").textContent =
+                    "Server se products nahi aaye. Server chalu karo (node server.js).";
+            });
+    </script>
+</body>
+</html>
